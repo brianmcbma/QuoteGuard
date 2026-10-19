@@ -26,3 +26,31 @@ def test_sharpe_requires_two_returns():
 
 def test_sharpe_is_zero_for_constant_returns():
     assert sharpe_ratio([0.01, 0.01, 0.01]) == 0
+
+from quoteguard.metrics import (
+    average_maker_markout,
+    adverse_selection_rate,
+)
+
+
+def test_average_maker_markout():
+    assert average_maker_markout([1.0, -1.0, 2.0]) == 2.0 / 3.0
+
+
+def test_adverse_selection_rate():
+    assert adverse_selection_rate([1.0, -1.0, -2.0, 3.0]) == 0.5
+
+
+def test_average_maker_markout_rejects_empty_list():
+    import pytest
+
+    with pytest.raises(ValueError):
+        average_maker_markout([])
+
+
+def test_adverse_selection_rate_rejects_empty_list():
+    import pytest
+
+    with pytest.raises(ValueError):
+        adverse_selection_rate([])
+

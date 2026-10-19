@@ -39,3 +39,19 @@ def sharpe_ratio(
         return 0.0
 
     return sqrt(periods_per_year) * mean(returns) / volatility
+
+def average_maker_markout(markouts: list[float]) -> float:
+    """Return the average markout across executed trades."""
+    if not markouts:
+        raise ValueError("Markouts cannot be empty.")
+
+    return mean(markouts)
+
+
+def adverse_selection_rate(markouts: list[float]) -> float:
+    """Return the fraction of executed trades with negative markouts."""
+    if not markouts:
+        raise ValueError("Markouts cannot be empty.")
+
+    return sum(markout < 0 for markout in markouts) / len(markouts)
+
