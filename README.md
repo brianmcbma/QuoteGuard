@@ -7,6 +7,7 @@ Overview
 QuoteGuard simulates a market maker quoting bid and ask prices while managing inventory risk. It investigates how directional order flow and inventory-based quote skew affect profitability and drawdown.
 
 The project uses reproducible simulations and paired random seeds to compare strategy configurations.
+![QuoteGuard risk-return chart](risk_return.svg)
 
 Key Features
 
