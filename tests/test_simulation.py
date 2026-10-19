@@ -28,14 +28,17 @@ def test_final_equity_matches_cash_and_inventory():
 
 
 def test_zero_fill_probability_produces_no_trades():
-    result = run_simulation(
-        SimulationConfig(steps=100, fill_probability=0)
+    config = SimulationConfig(
+        steps=100,
+        fill_probability=0,
+        initial_cash=10_000.0,
     )
+    result = run_simulation(config)
 
     assert result.trades == 0
     assert result.final_inventory == 0
-    assert result.final_cash == 0
-    assert result.final_equity == 0
+    assert result.final_cash == config.initial_cash
+    assert result.final_equity == config.initial_cash
 
 def test_trade_records_have_consistent_markout():
     result = run_simulation(SimulationConfig(steps=200))

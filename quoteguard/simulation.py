@@ -8,6 +8,7 @@ from quoteguard.strategy import StrategyConfig, make_quote
 @dataclass(frozen=True)
 class SimulationConfig:
     initial_price: float = 100.0
+    initial_cash: float = 10_000.0
     volatility: float = 0.05
     fill_probability: float = 0.7
     flow_strength: float = 0.6
@@ -43,7 +44,7 @@ class SimulationResult:
 def run_simulation(config: SimulationConfig) -> SimulationResult:
     rng = random.Random(config.seed)
     price = config.initial_price
-    maker = MarketMaker()
+    maker = MarketMaker(cash=config.initial_cash)
     trades = 0
     history = []
 
