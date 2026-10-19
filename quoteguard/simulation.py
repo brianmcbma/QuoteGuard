@@ -1,3 +1,4 @@
+
 from dataclasses import dataclass
 import random
 
@@ -15,10 +16,13 @@ class SimulationConfig:
     steps: int = 1000
     seed: int = 42
     max_inventory: int = 10
+    inventory_skew: float = 0.01
 
     def __post_init__(self) -> None:
         if self.initial_price <= 0:
             raise ValueError("Initial price must be positive.")
+        if self.initial_cash < 0:
+            raise ValueError("Initial cash cannot be negative.")
         if self.volatility < 0:
             raise ValueError("Volatility cannot be negative.")
         if not 0 <= self.fill_probability <= 1:
@@ -29,6 +33,8 @@ class SimulationConfig:
             raise ValueError("Steps must be positive.")
         if self.max_inventory < 1:
             raise ValueError("Maximum inventory must be positive.")
+        if self.inventory_skew < 0:
+            raise ValueError("Inventory skew cannot be negative.")
 
 
 @dataclass(frozen=True)
@@ -49,11 +55,11 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
     history = []
 
     strategy_config = StrategyConfig(
-        max_inventory=config.max_inventory
+        max_inventory=config.max_inventory,
+        inventory_skew=config.inventory_skew,
     )
 
     for step in range(config.steps):
-        # Hidden directional pressure in the simulated market.
         signal = rng.choice((-1, 1))
 
         quote = make_quote(
@@ -88,7 +94,6 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
                     maker_position_change = 1
                     trades += 1
 
-        # The hidden signal affects the subsequent market move.
         noise = rng.gauss(0, config.volatility)
         price *= (
             1
@@ -99,7 +104,6 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
         )
         price = max(price, 0.01)
 
-        # Immediate markout: the fill's value relative to the next mid.
         if trade_direction != 0:
             maker_markout = (
                 maker_position_change * (price - fill_price)
